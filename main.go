@@ -34,18 +34,63 @@ func main() {
 	fmt.Println("Количество свободных ячеек:", freeSlostBefore)
 
 	//3. Бесконечный цикл: читать команду, выполнять, пока не exit
+workLoop:
 	for {
 		var chose string
+
 		fmt.Println("Что вы хотите сделать?")
 		fmt.Scan(&chose)
 		switch chose {
 		case "put":
-			fmt.Println("Какой предмет вы хотите положить?")
-			itemName := fmt.Scan(&itemName)
-			fmt.Println("Сколько единиц?")
-			itemCount := fmt.Scan(&itemCount)
-			chest.Put(itemName, itemCount)
+			var itemName string
+			var itemCount int
 
+			fmt.Println("Какой предмет вы хотите положить?")
+			fmt.Scan(&itemName)
+			fmt.Println("Сколько единиц?")
+			fmt.Scan(&itemCount)
+			err := chest.Put(itemName, itemCount)
+			if err != nil {
+				fmt.Println("error", err)
+			} else {
+				fmt.Println("ok")
+			}
+		case "take":
+			var itemName string
+			var itemCount int
+
+			fmt.Println("Какой предмет вы хотите взять?")
+			fmt.Scan(&itemName)
+			fmt.Println("Сколько единиц?")
+			fmt.Scan(&itemCount)
+			err := chest.Take(itemName, itemCount)
+			if err != nil {
+				fmt.Println("error", err)
+			} else {
+				fmt.Println("ok")
+			}
+		case "count":
+			var itemName string
+
+			fmt.Println("Какой предмет ищите?")
+			fmt.Scan(&itemName)
+			itemCount := st.CountItem(itemName)
+			fmt.Println(itemCount)
+
+		case "find":
+			var itemName string
+
+			fmt.Println("Какой предмет ищите?")
+			fmt.Scan(&itemName)
+			fmt.Println(len(st.Find(itemName)))
+			items := st.Find(itemName)
+			fmt.Println(items)
+
+		case "exit":
+			break workLoop
+
+		default:
+			fmt.Println("error unknown_command")
 		}
 
 	}
@@ -59,13 +104,26 @@ func main() {
 	fmt.Println("Количество всех предметов:", totalItems)
 
 	// 5. SaveChest("chest.json", chest)
+	err = repo.SaveChest(chest)
+	if err != nil {
+		fmt.Println("error", err)
+		return
+	}
 
 	// 6. Напечатать содержимое chest.json одной строкой
 	fmt.Println("Сундук после изменений")
 	fmt.Println(chest.Slots)
 
 	// 7. LoadChest снова — напечатать UsedSlots и FreeSlots
-
+	chest, err = repo.LoadChest()
+	if err != nil {
+		fmt.Println("error", err)
+		return
+	}
+	cntUsedEnd := st.UsedSlots()
+	freeSlostEnd := st.FreeSlots()
+	fmt.Println("Количество занятых ячеек:", cntUsedEnd)
+	fmt.Println("Количество свободных ячеек:", freeSlostEnd)
 }
 
 // func main() {
