@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
@@ -23,5 +24,29 @@ func (fr FileRepository) LoadChest() (Chest, error) {
 		println("error while unmarshalling")
 		return Chest{}, err
 	}
+
+	if len(chest.Slots) != 27 {
+		return Chest{}, fmt.Errorf("invalid_storage")
+	}
+
 	return chest, nil
+}
+
+func (fr FileRepository) SaveChest(c Chest) error {
+
+	if len(c.Slots) != 27 {
+		return fmt.Errorf("invalid_storage")
+	}
+
+	data, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(fr.FileName, data, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

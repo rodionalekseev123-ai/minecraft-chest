@@ -17,24 +17,54 @@ import "fmt"
 func main() {
 	repo := FileRepository{"chest.json"}
 
+	// 1. LoadChest("chest.json")
 	chest, err := repo.LoadChest()
 	if err != nil {
 		fmt.Println("error", err)
 		return
 	}
 
-	cntUsed := chest.UsedSlots()
-	freeSlost := chest.FreeSlots()
-	//totalItems := chest.TotalItems()
+	var st Storage = &chest
 
-	fmt.Println(chest.Slots)
-	fmt.Println("Количество занятых ячеек:", cntUsed)
-	fmt.Println("Количество свободных ячеек:", freeSlost)
-	//fmt.Println("Количество всех предметов:", totalItems)
+	//2. Напечатать UsedSlots и FreeSlots
+	cntUsedBefore := st.UsedSlots()
+	freeSlostBefore := st.FreeSlots()
 
-	chest.Put()
+	fmt.Println("Количество занятых ячеек:", cntUsedBefore)
+	fmt.Println("Количество свободных ячеек:", freeSlostBefore)
+
+	//3. Бесконечный цикл: читать команду, выполнять, пока не exit
+	for {
+		var chose string
+		fmt.Println("Что вы хотите сделать?")
+		fmt.Scan(&chose)
+		switch chose {
+		case "put":
+			fmt.Println("Какой предмет вы хотите положить?")
+			itemName := fmt.Scan(&itemName)
+			fmt.Println("Сколько единиц?")
+			itemCount := fmt.Scan(&itemCount)
+			chest.Put(itemName, itemCount)
+
+		}
+
+	}
+
+	// 4. После exit: UsedSlots, FreeSlots, TotalItems
+	cntUsedAfter := st.UsedSlots()
+	freeSlostAfter := st.FreeSlots()
+	totalItems := chest.TotalItems()
+	fmt.Println("Количество занятых ячеек:", cntUsedAfter)
+	fmt.Println("Количество свободных ячеек:", freeSlostAfter)
+	fmt.Println("Количество всех предметов:", totalItems)
+
+	// 5. SaveChest("chest.json", chest)
+
+	// 6. Напечатать содержимое chest.json одной строкой
 	fmt.Println("Сундук после изменений")
 	fmt.Println(chest.Slots)
+
+	// 7. LoadChest снова — напечатать UsedSlots и FreeSlots
 
 }
 

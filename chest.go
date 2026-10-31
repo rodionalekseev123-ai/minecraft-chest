@@ -60,6 +60,17 @@ func (c Chest) TotalItems() int {
 
 }
 
+func (c Chest) CountItem(name string) int {
+	capacity := 0
+	ourItems := c.Find(name)
+	if len(ourItems) > 0 {
+		for i := 0; i < len(ourItems); i++ {
+			capacity += ourItems[i].Count
+		}
+	}
+	return capacity
+}
+
 // занятые этим предметом ячейки, по возрастанию индекса
 func (c Chest) Find(name string) []SlotView {
 
@@ -139,13 +150,10 @@ func (c Chest) Take(name string, count int) error {
 	takeCnt := count
 
 	//проверяем сколько всего предметов в сундуке, которые нам нужны
-	var capacity int
+	capacity := c.CountItem(name)
+
 	ourItems := c.Find(name)
-	if len(ourItems) > 0 {
-		for i := 0; i < len(ourItems); i++ {
-			capacity += ourItems[i].Count
-		}
-	}
+
 	if count > capacity {
 		return fmt.Errorf("not_enough")
 	} else if count <= 0 { //Валидация на введение число
